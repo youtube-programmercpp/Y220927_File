@@ -1,14 +1,30 @@
-﻿#define	_CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
+﻿#include <fstream>
+#include <iostream>
+#include <string>
+#include <Windows.h>
+#include <list>
+#include <vector>
+#include <algorithm>
 int main()
 {
-	if (FILE* const fp = fopen("file.txt", "w")) {
-		for (int i = 0; i < 100; ++i)
-			fprintf(fp, "%d\n", 1 + i);
-		//ファイルオープン成功
-		fclose(fp);
+	static const char filename[] = R"(Y:\source\youtube-programmercpp\sample.txt)";
+	if (std::ifstream file{ filename }) {
+		std::vector<std::string> a;
+		for (std::list<std::string> list;;) {
+			std::string s;
+			if (std::getline(file, s))
+				list.push_back(std::move(s));
+			else {
+				a.resize(list.size());
+				std::move(list.begin(), list.end(), a.begin());
+				break;
+			}
+		}
+		for (const auto& s : a) {
+			OutputDebugStringA(s.c_str());
+			OutputDebugStringA("\n");
+		}
 	}
-	else {
-		//ファイルオープン失敗
-	}
+	else
+		std::cerr << "ファイル「" << filename << "」をオープンすることが出来ませんでした。\n";
 }
